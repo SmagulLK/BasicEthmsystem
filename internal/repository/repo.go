@@ -1,10 +1,10 @@
 package repository
 
 import (
+	"go.uber.org/zap"
+
 	"TestProjectEthereum/models"
 	postgres "TestProjectEthereum/pkg/database/postgresql"
-
-	"go.uber.org/zap"
 )
 
 type Repository struct {
@@ -13,7 +13,7 @@ type Repository struct {
 
 func NewRepository(db *postgres.Postgres, logger *zap.Logger) *Repository {
 	return &Repository{
-		Operation: NewOperationRepository(db),
+		Operation: NewOperationRepository(db, logger),
 	}
 }
 
