@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:15.1
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: LiftKZ2023
+      POSTGRES_DB: petition_service
+      POSTGRES_USER: postgres
+    ports:
+    # (Left side): This is the port on your host machine : Right side): This is the port inside the Docker container that the service 
+      - "5432:5432"
+    volumes:
+      - ./dump/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  api:
+    ports:
+      - 8080:8080
