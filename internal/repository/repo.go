@@ -17,5 +17,5 @@ func NewRepository(db *sqlx.DB) *Repository {
 
 type Operation interface {
 	GetUserbyId(id int) (models.User, error)
-	BalanceUpdate(value float64) error
+	BalanceUpdate(value int32) error
 }

@@ -15,6 +15,6 @@ func NewOperationRepository(db *sqlx.DB) *OperationRepository {
 func (Op *OperationRepository) GetUserbyId(id int) (models.User, error) {
 	return models.User{}, nil
 }
-func (Op *OperationRepository) BalanceUpdate(value float64) error {
+func (Op *OperationRepository) BalanceUpdate(balance int32) error {
 	return nil
 }
