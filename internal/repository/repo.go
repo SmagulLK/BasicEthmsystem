@@ -2,14 +2,16 @@ package repository
 
 import (
 	"TestProjectEthereum/models"
-	"github.com/jmoiron/sqlx"
+	postgres "TestProjectEthereum/pkg/database/postgresql"
+
+	"go.uber.org/zap"
 )
 
 type Repository struct {
 	Operation
 }
 
-func NewRepository(db *sqlx.DB) *Repository {
+func NewRepository(db *postgres.Postgres, logger *zap.Logger) *Repository {
 	return &Repository{
 		Operation: NewOperationRepository(db),
 	}
