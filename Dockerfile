@@ -12,7 +12,7 @@ RUN go mod download
 COPY . .
 
 # Starting our application
-CMD ["sh", "-c", "cd cmd/api/ && go run main.go"]
+CMD ["sh", "-c", "cd cmd/ && go run main.go"]
 
 # Exposing server port
 EXPOSE 8080
