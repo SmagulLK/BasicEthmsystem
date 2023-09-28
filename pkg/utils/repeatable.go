@@ -1,6 +1,12 @@
 package utils
 
-import "time"
+import (
+	"time"
+)
+
+const (
+	BeginId = 0
+)
 
 func DoWithTrials(fn func() error, attemps int, delay time.Duration) (err error) {
 
