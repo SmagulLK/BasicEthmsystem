@@ -14,5 +14,7 @@ services:
       - ./dump/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   api:
+    build:
+      context: ./
     ports:
       - 8080:8080

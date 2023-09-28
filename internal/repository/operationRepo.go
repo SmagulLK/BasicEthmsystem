@@ -1,16 +1,19 @@
 package repository
 
 import (
+	"go.uber.org/zap"
+
 	"TestProjectEthereum/models"
-	"github.com/jmoiron/sqlx"
+	postgres "TestProjectEthereum/pkg/database/postgresql"
 )
 
 type OperationRepository struct {
-	db *sqlx.DB
+	db     *postgres.Postgres
+	logger *zap.Logger
 }
 
-func NewOperationRepository(db *sqlx.DB) *OperationRepository {
-	return &OperationRepository{db: db}
+func NewOperationRepository(db *postgres.Postgres, logger *zap.Logger) *OperationRepository {
+	return &OperationRepository{db: db, logger: logger}
 }
 func (Op *OperationRepository) GetUserbyId(id int) (*models.User, error) {
 
