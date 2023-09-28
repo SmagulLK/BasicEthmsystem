@@ -1,10 +1,13 @@
 package models
 
-import "crypto"
+import (
+	"crypto"
+	"math/big"
+)
 
 type User struct {
-	balance    float64
-	userID     int
-	publicKey  crypto.PublicKey
-	privateKey crypto.PrivateKey
+	Balance    big.Int           `json:"balance" binding:"required"`
+	UserID     int               `json:"user_id" `
+	PublicKey  crypto.PublicKey  `json:"public_key" binding:"required"`
+	PrivateKey crypto.PrivateKey `json:"private_key" binding:"required"`
 }

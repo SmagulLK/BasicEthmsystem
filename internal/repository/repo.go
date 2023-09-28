@@ -16,6 +16,7 @@ func NewRepository(db *sqlx.DB) *Repository {
 }
 
 type Operation interface {
-	GetUserbyId(id int) (models.User, error)
+	GetUserbyId(id int) (*models.User, error)
 	BalanceUpdate(value int32) error
+	InsertData(user *models.User) error
 }
