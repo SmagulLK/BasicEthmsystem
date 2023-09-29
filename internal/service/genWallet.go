@@ -35,11 +35,11 @@ func (Gen *GenerationService) Generate(ctx context.Context) (string, string, str
 
 	address := crypto.PubkeyToAddress(pvk.PublicKey).Hex()
 	var user = models.User{
-		*new(big.Int),
-		utils.BeginId,
-		pubStr,
-		pvkStr,
-		address,
+		Balance:    *new(big.Int),
+		UserID:     utils.BeginId,
+		PublicKey:  pubStr,
+		PrivateKey: pvkStr,
+		Address:    address,
 	}
 
 	err = Gen.repo.CommonIn.InsertData(ctx, &user)
