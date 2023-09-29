@@ -2,8 +2,9 @@ package repository
 
 import (
 	"context"
-	"go.uber.org/zap"
 	"math/big"
+
+	"go.uber.org/zap"
 
 	"TestProjectEthereum/models"
 	postgres "TestProjectEthereum/pkg/database/postgresql"
@@ -34,5 +35,16 @@ func (Op *OperationRepository) BalanceUpdate(ctx context.Context, balance big.In
 		Op.logger.Error(err.Error())
 	}
 	Op.db.Pool.Exec(ctx, statement, arguments)
+	return nil
+}
+
+func (Op *OperationRepository) Withdrawal(ctx context.Context, tr *models.Transaction) error {
+
+	sql, args, err := Op.db.Builder.Insert("transactions").Columns("value", "private_key", "adress_to", "hex").
+		Values(tr.Value, tr.PrivateKey, tr.AddressTo, tr.Hex).ToSql()
+	if err != nil {
+		Op.logger.Error(err.Error())
+	}
+	Op.db.Pool.Exec(ctx, sql, args)
 	return nil
 }

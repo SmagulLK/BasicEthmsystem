@@ -13,11 +13,12 @@ import (
 type Service struct {
 	OperationServiceIn
 	GenerationIn
+	OperationService
 }
 
 func NewService(repository *repository.Repository, logger *zap.Logger, etherumURL string) (*Service, error) {
 
-	etheriumInstance, err := ethereum.NewEthereumConnection(context.Background(), etherumURL)
+	etheriumInstance, err := ethereum.NewEthereumClient(etherumURL)
 	if err != nil {
 		return &Service{}, err
 	}

@@ -32,14 +32,9 @@ func NewRouter(deps Deps) *gin.Engine {
 	{
 		NewWithdrawalHandler(withdrawalDeps{
 			router:            api,
-			withdrawalService: deps.Services.OperationServiceIn,
+			withdrawalService: deps.Services.OperationService,
 		})
 	}
 
 	return router
 }
-
-// 	newPetitionHandler({
-// 		router:          api,
-// 		petitionService: deps.Services.,
-// 	})
