@@ -52,7 +52,10 @@ func New(ctx context.Context, logger *zap.Logger) (App, error) {
 	// }
 
 	repositories := repository.NewRepository(postgresInstance, logger)
-	services := service.NewService(repositories, logger)
+	services, err := service.NewService(repositories, logger, cfg.Ethereum.TestURL)
+	if err != nil {
+		return App{}, fmt.Errorf("can not connect to Ethereum: %w", err)
+	}
 
 	router := handlers.NewRouter(handlers.Deps{
 		Logger:   logger,

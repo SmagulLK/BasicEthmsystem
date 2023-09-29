@@ -1,14 +1,16 @@
 package service
 
 import (
-	"TestProjectEthereum/internal/repository"
-	"TestProjectEthereum/models"
-	"TestProjectEthereum/pkg/utils"
 	"context"
+	"math/big"
+
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	"go.uber.org/zap"
-	"math/big"
+
+	"TestProjectEthereum/internal/repository"
+	"TestProjectEthereum/models"
+	"TestProjectEthereum/pkg/utils"
 )
 
 type GenerationService struct {
@@ -45,6 +47,6 @@ func (Gen *GenerationService) Generate(ctx context.Context) (string, string, str
 		Gen.logger.Error(err.Error())
 		return "", "", "", err
 	}
-
+	// return nil
 	return address, pvkStr, pubStr, nil
 }

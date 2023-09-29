@@ -1,11 +1,13 @@
 package service
 
 import (
-	"TestProjectEthereum/internal/repository"
 	"context"
 	"math/big"
 
 	"go.uber.org/zap"
+
+	"TestProjectEthereum/internal/repository"
+	ethereum "TestProjectEthereum/pkg/blockchain/etherium"
 )
 
 type Service struct {
@@ -13,11 +15,16 @@ type Service struct {
 	GenerationIn
 }
 
-func NewService(repository *repository.Repository, logger *zap.Logger) *Service {
-	return &Service{
-		OperationServiceIn: NewOperationService(repository, logger),
-		GenerationIn:       NewGenService(repository, logger),
+func NewService(repository *repository.Repository, logger *zap.Logger, etherumURL string) (*Service, error) {
+
+	etheriumInstance, err := ethereum.NewEthereumConnection(context.Background(), etherumURL)
+	if err != nil {
+		return &Service{}, err
 	}
+	return &Service{
+		OperationServiceIn: NewOperationService(repository, logger, etheriumInstance),
+		GenerationIn:       NewGenService(repository, logger),
+	}, nil
 }
 
 type OperationServiceIn interface {

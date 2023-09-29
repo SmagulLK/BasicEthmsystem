@@ -28,15 +28,18 @@ func NewRouter(deps Deps) *gin.Engine {
 	router.Use(gin.Logger())
 	router.GET("/", deps.GenerationWallet)
 
+	api := router.Group("/api")
+	{
+		NewWithdrawalHandler(withdrawalDeps{
+			router:            api,
+			withdrawalService: deps.Services.OperationServiceIn,
+		})
+	}
+
 	return router
 }
-
-// api := router.Group("/api")
-// {
 
 // 	newPetitionHandler({
 // 		router:          api,
 // 		petitionService: deps.Services.,
 // 	})
-
-// }

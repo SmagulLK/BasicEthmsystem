@@ -11,8 +11,9 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+//todo move it to ENV
 const (
-	defaultMaxPoolSize  int           = 1
+	defaultMaxPoolSize  int           = 5
 	defaultConnAttempts int           = 10
 	defaultConnTimeout  time.Duration = 5 * time.Second
 )
