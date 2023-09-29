@@ -20,13 +20,13 @@ func NewGenService(repo *repository.Repository, logger *zap.Logger) *GenerationS
 	return &GenerationService{logger: logger, repo: repo}
 }
 
-func (Gen *GenerationService) Generate(ctx context.Context) error {
+func (Gen *GenerationService) Generate(ctx context.Context) (string, string, string, error) {
 	//pvk is private key original
 	//pvkStr is string
 	pvk, err := crypto.GenerateKey()
 	if err != nil {
 		Gen.logger.Error(err.Error())
-		return err
+		return "", "", "", err
 	}
 	pvkStr := hexutil.Encode(crypto.FromECDSA(pvk))
 	pubStr := hexutil.Encode(crypto.FromECDSAPub(&pvk.PublicKey))
@@ -43,8 +43,8 @@ func (Gen *GenerationService) Generate(ctx context.Context) error {
 	err = Gen.repo.CommonIn.InsertData(ctx, &user)
 	if err != nil {
 		Gen.logger.Error(err.Error())
-		return err
+		return "", "", "", err
 	}
-	return nil
-	//return address, pvkStr, pubStr, nil
+
+	return address, pvkStr, pubStr, nil
 }

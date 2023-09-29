@@ -24,5 +24,5 @@ type OperationServiceIn interface {
 	UpdateBalance(ctx context.Context, balance big.Int) error
 }
 type GenerationIn interface {
-	Generate(ctx context.Context) error
+	Generate(ctx context.Context) (string, string, string, error)
 }
