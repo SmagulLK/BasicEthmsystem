@@ -1,14 +1,16 @@
 package service
 
 import (
-	"TestProjectEthereum/internal/repository"
-	"TestProjectEthereum/models"
-	"TestProjectEthereum/pkg/utils"
 	"context"
+	"math/big"
+
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	"go.uber.org/zap"
-	"math/big"
+
+	"TestProjectEthereum/internal/repository"
+	"TestProjectEthereum/models"
+	"TestProjectEthereum/pkg/utils"
 )
 
 type GenerationService struct {
@@ -33,11 +35,11 @@ func (Gen *GenerationService) Generate(ctx context.Context) (string, string, str
 
 	address := crypto.PubkeyToAddress(pvk.PublicKey).Hex()
 	var user = models.User{
-		*new(big.Int),
-		utils.BeginId,
-		pubStr,
-		pvkStr,
-		address,
+		Balance:    *new(big.Int),
+		UserID:     utils.BeginId,
+		PublicKey:  pubStr,
+		PrivateKey: pvkStr,
+		Address:    address,
 	}
 
 	err = Gen.repo.CommonIn.InsertData(ctx, &user)
@@ -45,6 +47,6 @@ func (Gen *GenerationService) Generate(ctx context.Context) (string, string, str
 		Gen.logger.Error(err.Error())
 		return "", "", "", err
 	}
-
+	// return nil
 	return address, pvkStr, pubStr, nil
 }

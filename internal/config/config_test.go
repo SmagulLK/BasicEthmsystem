@@ -56,7 +56,8 @@ type (
 		Postgres    Postgres
 		Logger      Logger
 		// Token       Token
-		CORS CORS
+		CORS     CORS
+		Ethereum Ethereum
 	}
 
 	// HTTP is the configuration for the HTTP server.
@@ -93,6 +94,9 @@ type (
 	CORS struct {
 		AllowOrigins []string `env:"CORS_ALLOW_ORIGINS" default:"*"`
 		// required:"true"`
+	}
+	Ethereum struct {
+		TestURL string `env:"ETHIRUM_TEST_URL" default:"https://sepolia.infura.io/v3/626c64c2e8db40bda6fe4772870d9b4d"`
 	}
 )
 
@@ -166,7 +170,7 @@ func TestGet(t *testing.T) {
 	instance.Postgres.SSLMode = myEnv["POSTGRES_SSLMODE"]
 	instance.Logger.Level = myEnv["LOGGER_LEVEL"]
 	instance.CORS.AllowOrigins = strings.Split(myEnv["CORS_ALLOW_ORIGINS"], ",")
-
+	instance.Ethereum.TestURL = myEnv["ETHIRUM_TEST_URL"]
 	fmt.Println("instance: ", instance)
 
 }

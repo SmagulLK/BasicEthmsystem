@@ -1,11 +1,13 @@
 package repository
 
 import (
+	"context"
+	"math/big"
+
+	"go.uber.org/zap"
+
 	"TestProjectEthereum/models"
 	postgres "TestProjectEthereum/pkg/database/postgresql"
-	"context"
-	"go.uber.org/zap"
-	"math/big"
 )
 
 type Repository struct {
@@ -27,6 +29,7 @@ type CommonIn interface {
 type Operation interface {
 	GetUserByAddress(ctx context.Context, address string) (*models.User, error)
 	BalanceUpdate(ctx context.Context, value big.Int) error
+	Withdrawal(ctx context.Context, tr *models.Transaction) error
 }
 type Generation interface {
 }
