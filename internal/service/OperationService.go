@@ -47,10 +47,12 @@ func (Op *OperationService) Withdrawal(ctx context.Context, tr *models.Transacti
 		return err
 	}
 
+	Op.logger.Debug("publicKey was created: ")
+
 	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
 	nonce, err := Op.ethereumClient.PendingNonceAt(context.Background(), fromAddress)
 	if err != nil {
-		Op.logger.Error(err.Error())
+		Op.logger.Error("cannot create nonce: " + err.Error())
 		return err
 	}
 
@@ -74,9 +76,11 @@ func (Op *OperationService) Withdrawal(ctx context.Context, tr *models.Transacti
 	var data []byte
 	tx := types.NewTransaction(nonce, toAddress, value, gasLimit, gasPrice, data)
 
+	Op.logger.Debug("ToAddress was created: ")
+
 	chainID, err := Op.ethereumClient.NetworkID(context.Background())
 	if err != nil {
-		Op.logger.Error(err.Error())
+		Op.logger.Error("can't get chainID: " + err.Error())
 		return err
 	}
 

@@ -1,0 +1,23 @@
+ENVIRONMENT: dev
+
+HTTP:
+  Host: 0.0.0.0
+  Port: "8080" # Note that we enclose the port in quotes to keep it as a string
+
+Postgres:
+  Host: db
+  Port: "5432" # Again, enclose the port in quotes
+  DBName: etherium_service
+  User: postgres
+  Password: Test2023
+  SSLMode: disable
+
+Logger:
+  Level: debug
+
+CORS:
+  AllowOrigins:
+    - "*" # If you want to specify multiple origins, you can add them to the list here
+
+Ethereum:
+  TestURL: https://sepolia.infura.io/v3/626c64c2e8db40bda6fe4772870d9b4d

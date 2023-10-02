@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -31,15 +32,23 @@ func NewWithdrawalHandler(deps withdrawalDeps) {
 }
 
 func (w withdrawalHandler) Withdrawal(c *gin.Context) {
-
+	fmt.Println("Inside")
 	var requestData *models.Transaction
 
 	if err := c.BindJSON(&requestData); err != nil {
+		fmt.Println("bad req")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	w.withdrawalService.Withdrawal(c, requestData)
+	fmt.Println("request: ", requestData)
+
+	if err := w.withdrawalService.Withdrawal(c, requestData); err != nil {
+		fmt.Println("service error: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{"message": "Withdrawal successful"})
 
 }
