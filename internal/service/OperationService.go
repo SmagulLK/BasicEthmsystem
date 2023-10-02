@@ -101,5 +101,4 @@ func (Op *OperationService) Withdrawal(ctx context.Context, tr *models.Transacti
 	Op.logger.Info("tx has been inserted to db: ", zap.String("HEX", signedTx.Hash().Hex()))
 
 	return nil
-	//return address, pvkStr, pubStr, nil
 }

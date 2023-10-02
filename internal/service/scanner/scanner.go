@@ -50,30 +50,31 @@ func (s *WalletDepositService) Start() {
 
 				// Process the block for transactions related to the watched accounts.
 				for _, tx := range block.Transactions() {
+
 					// Check if the transaction is related to one of the watched accounts.
 					if tx.To() != nil && *tx.To() == s.hotWalletAddress {
 						// Transfer all funds from the transaction sender to the hot wallet.
 
 						// Get the sender's address (From) using tx.From() method.
 						//TODO think about common.Hash{}, uint(0)
-						fromAddress, err := s.client.TransactionSender(context.Background(), tx, common.Hash{}, uint(0))
-						if err != nil {
-							fmt.Println(err)
-							continue
-						}
+						// fromAddress, err := s.client.TransactionSender(context.Background(), tx, common.Hash{}, uint(0))
+						// if err != nil {
+						// 	fmt.Println(err)
+						// 	continue
+						// }
 
-						err = s.transferFunds(fromAddress, tx.Value())
-						if err != nil {
-							fmt.Println(err)
-							continue
-						}
+						// err = s.transferFunds(fromAddress, tx.Value())
+						// if err != nil {
+						// 	fmt.Println(err)
+						// 	continue
+						// }
 
 						// Update the balance in the database for the account.
-						err = s.updateBalance(fromAddress, tx.Value())
-						if err != nil {
-							fmt.Println(err)
-							continue
-						}
+						// err = s.updateBalance(fromAddress, tx.Value())
+						// if err != nil {
+						// 	fmt.Println(err)
+						// 	continue
+						// }
 					}
 				}
 
