@@ -3,8 +3,10 @@ package service
 import (
 	"context"
 	"crypto/ecdsa"
+	"errors"
 	"math/big"
 	"strconv"
+	"time"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -92,13 +94,45 @@ func (Op *OperationService) Withdrawal(ctx context.Context, tr *models.Transacti
 	Op.logger.Debug("tx sent: ", zap.String("HEX", signedTx.Hash().Hex()))
 	tr.Hex = signedTx.Hash().Hex()
 
-	err = Op.repo.Withdrawal(ctx, tr)
+	// Wait for the transaction to be mined and check its status.
+	receipt, err := Op.waitForTransaction(ctx, signedTx.Hash())
 	if err != nil {
 		Op.logger.Error(err.Error())
 		return err
 	}
 
+	if receipt.Status != types.ReceiptStatusSuccessful {
+		Op.logger.Error("Transaction failed")
+		return errors.New("transaction failed")
+	}
+
+	// err = Op.repo.Withdrawal(ctx, tr)
+	// if err != nil {
+	// 	Op.logger.Error(err.Error())
+	// 	return err
+	// }
+
 	Op.logger.Info("tx has been inserted to db: ", zap.String("HEX", signedTx.Hash().Hex()))
 
 	return nil
+}
+
+func (Op *OperationService) waitForTransaction(ctx context.Context, txHash common.Hash) (*types.Receipt, error) {
+	ticker := time.NewTicker(5 * time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case <-ticker.C:
+			receipt, err := Op.ethereumClient.TransactionReceipt(ctx, txHash)
+			if err != nil {
+				return nil, err
+			}
+			if receipt != nil {
+				return receipt, nil
+			}
+		}
+	}
 }

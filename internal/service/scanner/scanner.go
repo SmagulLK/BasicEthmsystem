@@ -125,3 +125,33 @@ func (s *WalletDepositService) updateBalance(fromAddress common.Address, amount 
 
 	return nil
 }
+
+func (Op *WalletDepositService) waitForTransaction(ctx context.Context, txHash common.Hash) (*types.Receipt, error) {
+	ticker := time.NewTicker(5 * time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case <-ticker.C:
+			receipt, err := Op.client.TransactionReceipt(ctx, txHash)
+			if err != nil {
+				return nil, err
+			}
+			if receipt != nil {
+				return receipt, nil
+			}
+		}
+	}
+}
+
+func (Op *WalletDepositService) checkTransactionReceipt(_txHash string) int {
+
+	txHash := common.HexToHash(_txHash)
+	tx, err := Op.client.TransactionReceipt(context.Background(), txHash)
+	if err != nil {
+		return (-1)
+	}
+	return (int(tx.Status))
+}
