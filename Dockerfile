@@ -2,7 +2,7 @@
 FROM golang:1.21.1-alpine3.18
 
 # Work directory
-WORKDIR /app
+WORKDIR bin/app
 
 # Installing dependencies
 COPY go.mod go.sum ./

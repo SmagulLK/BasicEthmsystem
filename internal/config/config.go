@@ -2,16 +2,14 @@
 package config
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/joho/godotenv"
 )
 
 // EnvType is the type of the environment.
@@ -98,94 +96,60 @@ var (
 
 // Get returns the singleton instance of the configuration.
 func Get() *Config {
-	once.Do(func() {
-
-		// Store the current working directory.
-		// This is important because we'll be changing the working directory temporarily to locate and load the .env file,
-		// and we want to ensure we can return to the original directory later.
-		originalDir, err := os.Getwd()
+	originalDir, err := os.Getwd()
+	if err != nil {
+		log.Fatalf("Error getting current working directory: %v", err)
+	}
+	// Change the working directory to where the .env file is located.    // Adjust the path as needed.
+	err = os.Chdir("..")
+	if err != nil {
+		log.Fatalf("Error changing working directory: %v", err)
+	}
+	// Restore the original working directory when the test finishes.
+	defer func() {
+		err := os.Chdir(originalDir)
 		if err != nil {
-
-			log.Fatalf("Error getting current working directory: %v", err)
+			log.Fatalf("Error restoring working directory: %v", err)
 		}
-
-		// Change the working directory to where the .env file is located.
-		// Adjust the path as needed.
-		err = os.Chdir("../../")
-		if err != nil {
-			log.Fatalf("Error changing working directory: %v", err)
-		}
-
-		// Restore the original working directory when the test finishes.
-		defer func() {
-			err := os.Chdir(originalDir)
-			if err != nil {
-				log.Fatalf("Error restoring working directory: %v", err)
-			}
-		}()
-
-		// Load the .env file and read its contents.
-		err = godotenv.Load(".env")
-		if err != nil {
-			log.Fatalf("Error loading .env file: %v", err)
-		}
-
-		myEnv, err := godotenv.Read()
-		if err != nil {
-			log.Fatalf("Error read .env file: %v", err)
-		}
-		fmt.Println("myEnv: ", myEnv)
-
-		instance.Environment = EnvType(myEnv["ENVIRONMENT"])
-		instance.HTTP.Host = myEnv["HTTP_HOST"]
-		instance.HTTP.Port = myEnv["HTTP_PORT"]
-		maxHeaderBytes, err := strconv.Atoi(myEnv["HTTP_MAX_HEADER_BYTES"])
-		if err != nil {
-			log.Fatalf("Error converting HTTP_MAX_HEADER_BYTES to int: %v", err)
-		}
-		instance.HTTP.MaxHeaderBytes = maxHeaderBytes
-
-		readTimeoutStr := myEnv["HTTP_READ_TIMEOUT"]
-		readTimeout, err := time.ParseDuration(readTimeoutStr)
-		if err != nil {
-			log.Fatalf("Error converting HTTP_READ_TIMEOUT to time.Duration: %v", err)
-		}
-		instance.HTTP.ReadTimeout = readTimeout
-
-		writeTimeoutStr := myEnv["HTTP_WRITE_TIMEOUT"]
-		writeTimeout, err := time.ParseDuration(writeTimeoutStr)
-		if err != nil {
-			log.Fatalf("Error converting HTTP_WRITE_TIMEOUT to time.Duration: %v", err)
-		}
-		instance.HTTP.WriteTimeout = writeTimeout
-
-		instance.Postgres.Host = myEnv["POSTGRES_HOST"]
-		instance.Postgres.Port = myEnv["POSTGRES_PORT"]
-		instance.Postgres.DBName = myEnv["POSTGRES_DBNAME"]
-		instance.Postgres.User = myEnv["POSTGRES_USER"]
-		instance.Postgres.Password = myEnv["POSTGRES_PASSWORD"]
-		instance.Postgres.SSLMode = myEnv["POSTGRES_SSLMODE"]
-		instance.Logger.Level = myEnv["LOGGER_LEVEL"]
-		instance.CORS.AllowOrigins = strings.Split(myEnv["CORS_ALLOW_ORIGINS"], ",")
-		instance.Ethereum.TestURL = myEnv["ETHIRUM_TEST_URL"]
-
-		fmt.Println("instance: ", instance)
-
-		fmt.Println("instance of the application: ", instance)
-
-		switch instance.Environment {
-		case test, prod, dev:
-		default:
-			log.Fatal("config environment should be test, prod or dev")
-		}
-		if instance.IsDev() {
-			configBytes, err := json.MarshalIndent(instance, "", " ")
-			if err != nil {
-				log.Fatal(fmt.Errorf("error marshaling indent config: %w", err))
-			}
-			fmt.Println("Configuration:", string(configBytes))
-		}
-	})
-
+	}()
+	err = godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+	myEnv, err := godotenv.Read()
+	if err != nil {
+		log.Fatalf("Error read .env file: %v", err)
+	}
+	fmt.Println("myEnv: ", myEnv)
+	instance.Environment = EnvType(myEnv["ENVIRONMENT"])
+	instance.HTTP.Host = myEnv["HTTP_HOST"]
+	instance.HTTP.Port = myEnv["HTTP_PORT"]
+	maxHeaderBytes, err := strconv.Atoi(myEnv["HTTP_MAX_HEADER_BYTES"])
+	if err != nil {
+		log.Fatalf("Error converting HTTP_MAX_HEADER_BYTES to int: %v", err)
+	}
+	instance.HTTP.MaxHeaderBytes = maxHeaderBytes
+	readTimeoutStr := myEnv["HTTP_READ_TIMEOUT"]
+	readTimeout, err := time.ParseDuration(readTimeoutStr)
+	if err != nil {
+		log.Fatalf("Error converting HTTP_READ_TIMEOUT to time.Duration: %v", err)
+	}
+	instance.HTTP.ReadTimeout = readTimeout
+	writeTimeoutStr := myEnv["HTTP_WRITE_TIMEOUT"]
+	writeTimeout, err := time.ParseDuration(writeTimeoutStr)
+	if err != nil {
+		log.Fatalf("Error converting HTTP_WRITE_TIMEOUT to time.Duration: %v", err)
+	}
+	instance.HTTP.WriteTimeout = writeTimeout
+	instance.Postgres.Host = myEnv["POSTGRES_HOST"]
+	instance.Postgres.Port = myEnv["POSTGRES_PORT"]
+	instance.Postgres.DBName = myEnv["POSTGRES_DBNAME"]
+	instance.Postgres.User = myEnv["POSTGRES_USER"]
+	instance.Postgres.Password = myEnv["POSTGRES_PASSWORD"]
+	instance.Postgres.SSLMode = myEnv["POSTGRES_SSLMODE"]
+	instance.Logger.Level = myEnv["LOGGER_LEVEL"]
+	instance.CORS.AllowOrigins = strings.Split(myEnv["CORS_ALLOW_ORIGINS"], ",")
+	instance.Ethereum.TestURL = myEnv["ETHIRUM_TEST_URL"]
 	return &instance
+
 }

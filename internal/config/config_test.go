@@ -129,6 +129,7 @@ func TestGet(t *testing.T) {
 
 	// Load the .env file and read its contents.
 	err = godotenv.Load(".env")
+
 	if err != nil {
 		t.Fatalf("Error loading .env file: %v", err)
 	}
