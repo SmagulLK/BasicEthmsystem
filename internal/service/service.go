@@ -25,6 +25,7 @@ func NewService(repository *repository.Repository, logger *zap.Logger, etherumUR
 	return &Service{
 		OperationServiceIn: NewOperationService(repository, logger, etheriumInstance),
 		GenerationIn:       NewGenService(repository, logger),
+		OperationService:   *NewOperationService(repository, logger, etheriumInstance),
 	}, nil
 }
 

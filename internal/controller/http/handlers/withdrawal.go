@@ -10,6 +10,10 @@ import (
 	"TestProjectEthereum/models"
 )
 
+// type WithdrawalService interface {
+// 	Withdrawal(ctx context.Context, tr models.Transaction) error
+// }
+
 type withdrawalDeps struct {
 	router            *gin.RouterGroup
 	withdrawalService service.OperationService

@@ -23,8 +23,10 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+  
 
   api:
+    # restart: always
     container_name: etheruim-service-api
     env_file:
       - .env
