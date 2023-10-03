@@ -3,13 +3,14 @@ package config
 
 import (
 	"fmt"
-	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 // EnvType is the type of the environment.
@@ -120,7 +121,7 @@ func Get() *Config {
 	if err != nil {
 		log.Fatalf("Error read .env file: %v", err)
 	}
-	fmt.Println("myEnv: ", myEnv)
+	// fmt.Println("myEnv: ", myEnv)
 	instance.Environment = EnvType(myEnv["ENVIRONMENT"])
 	instance.HTTP.Host = myEnv["HTTP_HOST"]
 	instance.HTTP.Port = myEnv["HTTP_PORT"]

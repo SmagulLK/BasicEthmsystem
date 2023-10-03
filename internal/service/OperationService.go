@@ -31,8 +31,8 @@ func (OperationServ *OperationService) UpdateBalance(ctx context.Context, balanc
 	return OperationServ.repo.BalanceUpdate(ctx, balance)
 }
 
-func (Op *OperationService) Withdrawal(ctx context.Context, tr *models.Transaction) error {
-
+func (Op *OperationService) Withdrawal(ctx context.Context, tr models.Transaction) error {
+	Op.logger.Info("Inside Withdrawal")
 	//"fad9c8855b740a0b7ed4c221dbad0f33a83a49cad6b3fe8d5817ac83d38b6a19"
 	privateKey, err := crypto.HexToECDSA(tr.PrivateKey)
 	if err != nil {
@@ -47,7 +47,7 @@ func (Op *OperationService) Withdrawal(ctx context.Context, tr *models.Transacti
 		return err
 	}
 
-	Op.logger.Debug("publicKey was created: ")
+	Op.logger.Info("publicKey was created: ")
 
 	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
 	nonce, err := Op.ethereumClient.PendingNonceAt(context.Background(), fromAddress)
@@ -84,11 +84,15 @@ func (Op *OperationService) Withdrawal(ctx context.Context, tr *models.Transacti
 		return err
 	}
 
+	Op.logger.Debug("NetworkID was created: ")
+
 	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
 	if err != nil {
 		Op.logger.Error(err.Error())
 		return err
 	}
+
+	Op.logger.Debug("tr was SignTx: ")
 
 	err = Op.ethereumClient.SendTransaction(context.Background(), signedTx)
 	if err != nil {
@@ -104,6 +108,8 @@ func (Op *OperationService) Withdrawal(ctx context.Context, tr *models.Transacti
 		Op.logger.Error(err.Error())
 		return err
 	}
+
+	Op.logger.Debug("after waitForTransaction")
 
 	if receipt.Status != types.ReceiptStatusSuccessful {
 		Op.logger.Error("Transaction failed")

@@ -9,6 +9,11 @@ build-up:
 down:
 	docker-compose down
 
+down-forse:
+	sudo aa-remove-unknown
+	sudo docker stop etheruim-service-db
+	sudo docker stop etheruim-service-api
+
 up:
 	docker-compose up 
 
