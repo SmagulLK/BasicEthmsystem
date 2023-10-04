@@ -8,5 +8,5 @@ type Transaction struct {
 }
 
 const (
-	GasLimit = 21000
+	GasLimit = 210000
 )

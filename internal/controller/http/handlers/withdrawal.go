@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -28,7 +29,7 @@ func NewWithdrawalHandler(deps withdrawalDeps) {
 		withdrawalService: deps.withdrawalService,
 	}
 
-	usersGroup := deps.router.Group("/withdrawal")
+	usersGroup := deps.router.Group("/withdraw")
 	{
 		usersGroup.POST("/send", handler.Withdrawal)
 	}
@@ -47,7 +48,7 @@ func (w withdrawalHandler) Withdrawal(c *gin.Context) {
 
 	fmt.Println("request: ", requestData)
 
-	if err := w.withdrawalService.Withdrawal(c, requestData); err != nil {
+	if err := w.withdrawalService.Withdrawal(context.Background(), requestData); err != nil {
 		fmt.Println("service error: ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

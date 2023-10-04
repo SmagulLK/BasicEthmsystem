@@ -103,7 +103,7 @@ func (Op *OperationService) Withdrawal(ctx context.Context, tr models.Transactio
 	tr.Hex = signedTx.Hash().Hex()
 
 	// Wait for the transaction to be mined and check its status.
-	receipt, err := Op.waitForTransaction(ctx, signedTx.Hash())
+	receipt, err := Op.waitForTransaction(context.Background(), signedTx.Hash())
 	if err != nil {
 		Op.logger.Error(err.Error())
 		return err
@@ -128,7 +128,8 @@ func (Op *OperationService) Withdrawal(ctx context.Context, tr models.Transactio
 }
 
 func (Op *OperationService) waitForTransaction(ctx context.Context, txHash common.Hash) (*types.Receipt, error) {
-	ticker := time.NewTicker(5 * time.Second)
+
+	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
 
 	for {
@@ -136,11 +137,12 @@ func (Op *OperationService) waitForTransaction(ctx context.Context, txHash commo
 		case <-ctx.Done():
 			return nil, ctx.Err()
 		case <-ticker.C:
-			receipt, err := Op.ethereumClient.TransactionReceipt(ctx, txHash)
-			if err != nil {
-				return nil, err
-			}
-			if receipt != nil {
+			receipt, _ := Op.ethereumClient.TransactionReceipt(ctx, txHash)
+			//if err != nil {
+			//	return nil, err
+			//}
+
+			if receipt.Status == 1 {
 				return receipt, nil
 			}
 		}
