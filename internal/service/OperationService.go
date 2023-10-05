@@ -115,11 +115,11 @@ func (Op *OperationService) Withdrawal(ctx context.Context, tr models.Transactio
 		return errors.New("transaction failed")
 	}
 
-	// err = Op.repo.Withdrawal(ctx, tr)
-	// if err != nil {
-	// 	Op.logger.Error(err.Error())
-	// 	return err
-	// }
+	err = Op.repo.Withdrawal(ctx, &tr)
+	if err != nil {
+		Op.logger.Error(err.Error())
+		return err
+	}
 
 	Op.logger.Info("tx has been inserted to db: ", zap.String("HEX", signedTx.Hash().Hex()))
 
