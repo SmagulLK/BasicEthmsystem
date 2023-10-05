@@ -13,19 +13,21 @@ import (
 type Repository struct {
 	Operation
 	Generation
-	CommonIn
+	Common
+	//CommonIn
 }
 
 func NewRepository(db *postgres.Postgres, logger *zap.Logger) *Repository {
 	return &Repository{
 		Operation:  NewOperationRepository(db, logger),
 		Generation: NewGenRepository(db, logger),
+		Common:     *NewCommonRepository(db, logger),
 	}
 }
 
-type CommonIn interface {
-	InsertData(user *models.User) error
-}
+//	type CommonIn interface {
+//		InsertData(user models.User) error
+//	}
 type Operation interface {
 	GetUserByAddress(ctx context.Context, address string) (*models.User, error)
 	BalanceUpdate(ctx context.Context, value big.Int) error

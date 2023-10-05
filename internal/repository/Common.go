@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"go.uber.org/zap"
 
@@ -14,14 +16,22 @@ type Common struct {
 	logger *zap.Logger
 }
 
-//	func NewCommonRepository(db *postgres.Postgres, logger *zap.Logger) *Common {
-//		return &Common{db: db, logger: logger}
-//	}
-func (Op *Common) InsertData(ctx context.Context, user *models.User) error {
-	statement, arguments, err := Op.db.Builder.Insert("users").Columns("private_key", "public_key", "addres").Values(user.PrivateKey, user.PublicKey, user.Address).ToSql()
+func NewCommonRepository(db *postgres.Postgres, logger *zap.Logger) *Common {
+	return &Common{db: db, logger: logger}
+}
+func (Op *Common) InsertData(user models.User) error {
+	Op.logger.Info("inside InsertData")
+	statement, arguments, err := Op.db.Builder.Insert("users").Columns("private_key", "public_key", "addres", "balance").Values(user.PrivateKey, user.PublicKey, user.Address, user.Balance).ToSql()
 	if err != nil {
 		Op.logger.Error(err.Error())
 	}
-	Op.db.Pool.Exec(ctx, statement, arguments)
+	Op.logger.Info(statement)
+	fmt.Println(arguments)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+	_, err = Op.db.Pool.Exec(ctx, statement, arguments)
+	if err != nil {
+		Op.logger.Error(err.Error())
+	}
 	return nil
 }

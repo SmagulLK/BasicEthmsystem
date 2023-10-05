@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -33,18 +34,21 @@ func (Gen *GenerationService) Generate() (string, string, string, error) {
 	pubStr := hexutil.Encode(crypto.FromECDSAPub(&pvk.PublicKey))
 
 	address := crypto.PubkeyToAddress(pvk.PublicKey).Hex()
-	val := new(big.Int)
+	var val big.Int
 	var user = models.User{
-		Balance:    *val,
+		Balance:    val,
 		UserID:     utils.BeginId,
 		PublicKey:  pubStr,
 		PrivateKey: pvkStr,
 		Address:    address,
 	}
+	fmt.Println("user: ", user)
+	//Gen.logger.Info("user: ",zap.zap(user))
 	// ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	// defer cancel()
-	err = Gen.repo.CommonIn.InsertData(&user)
+	err = Gen.repo.InsertData(user)
 	if err != nil {
+		Gen.logger.Info("ERR INSIDE GEN INSER DATA")
 		Gen.logger.Error(err.Error())
 		return "", "", "", err
 	}
