@@ -35,7 +35,10 @@ func (Op *OperationRepository) BalanceUpdate(ctx context.Context, balance big.In
 	if err != nil {
 		Op.logger.Error(err.Error())
 	}
-	Op.db.Pool.Exec(ctx, statement, arguments)
+	_, err = Op.db.Pool.Exec(ctx, statement, arguments...)
+	if err != nil {
+		Op.logger.Error(err.Error())
+	}
 	return nil
 }
 
