@@ -24,7 +24,7 @@ func NewRepository(db *postgres.Postgres, logger *zap.Logger) *Repository {
 }
 
 type CommonIn interface {
-	InsertData(ctx context.Context, user *models.User) error
+	InsertData(user *models.User) error
 }
 type Operation interface {
 	GetUserByAddress(ctx context.Context, address string) (*models.User, error)

@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -22,7 +21,7 @@ func NewGenService(repo *repository.Repository, logger *zap.Logger) *GenerationS
 	return &GenerationService{logger: logger, repo: repo}
 }
 
-func (Gen *GenerationService) Generate(ctx context.Context) (string, string, string, error) {
+func (Gen *GenerationService) Generate() (string, string, string, error) {
 	//pvk is private key original
 	//pvkStr is string
 	pvk, err := crypto.GenerateKey()
@@ -34,15 +33,17 @@ func (Gen *GenerationService) Generate(ctx context.Context) (string, string, str
 	pubStr := hexutil.Encode(crypto.FromECDSAPub(&pvk.PublicKey))
 
 	address := crypto.PubkeyToAddress(pvk.PublicKey).Hex()
+	val := new(big.Int)
 	var user = models.User{
-		Balance:    *new(big.Int),
+		Balance:    *val,
 		UserID:     utils.BeginId,
 		PublicKey:  pubStr,
 		PrivateKey: pvkStr,
 		Address:    address,
 	}
-
-	err = Gen.repo.CommonIn.InsertData(ctx, &user)
+	// ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	// defer cancel()
+	err = Gen.repo.CommonIn.InsertData(&user)
 	if err != nil {
 		Gen.logger.Error(err.Error())
 		return "", "", "", err

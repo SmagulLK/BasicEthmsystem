@@ -1,9 +1,12 @@
 package handlers
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 func (h *Deps) GenerationWallet(ctx *gin.Context) {
-	addr, pvkStr, pubstr, err := h.Services.GenerationIn.Generate(ctx)
+
+	addr, pvkStr, pubstr, err := h.Services.GenerationIn.Generate()
 	if err != nil {
 		ctx.JSON(500, gin.H{
 			"error": err.Error(),
