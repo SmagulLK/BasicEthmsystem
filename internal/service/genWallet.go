@@ -34,7 +34,7 @@ func (Gen *GenerationService) Generate() (string, string, string, error) {
 	pubStr := hexutil.Encode(crypto.FromECDSAPub(&pvk.PublicKey))
 
 	address := crypto.PubkeyToAddress(pvk.PublicKey).Hex()
-	zero := *big.NewInt(0)
+	zero := big.NewInt(0)
 	var user = models.User{
 		Balance:    zero,
 		UserID:     utils.BeginId,
