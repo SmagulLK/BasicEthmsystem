@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"math/big"
 
 	"go.uber.org/zap"
@@ -41,10 +42,22 @@ func (Op *OperationRepository) BalanceUpdate(ctx context.Context, balance big.In
 func (Op *OperationRepository) Withdrawal(ctx context.Context, tr *models.Transaction) error {
 
 	sql, args, err := Op.db.Builder.Insert("transactions").Columns("amount", "private_key", "adress_to", "hex").
-		Values(tr.Value, tr.PrivateKey, tr.AddressTo, tr.Hex).ToSql()
+		Values(tr.ValueBigInt, tr.PrivateKey, tr.AddressTo, tr.Hex).ToSql()
 	if err != nil {
 		Op.logger.Error(err.Error())
 	}
-	Op.db.Pool.Exec(ctx, sql, args)
+
+	Op.logger.Info(sql)
+	fmt.Println(args)
+
+	result, err := Op.db.Pool.Exec(ctx, sql, args)
+	if err != nil {
+		Op.logger.Error(err.Error())
+	}
+	rowsAffected := result.RowsAffected()
+	if rowsAffected != 1 {
+		Op.logger.Error("expected 1 row to be affected")
+		return fmt.Errorf("expected 1 row to be affected, but %d rows were affected", rowsAffected)
+	}
 	return nil
 }

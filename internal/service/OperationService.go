@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"errors"
+	"fmt"
 	"math/big"
 	"time"
 
@@ -63,7 +64,17 @@ func (Op *OperationService) Withdrawal(ctx context.Context, tr models.Transactio
 	//}
 
 	//1000000000000000000
-	value := tr.Value                   // in wei (1 eth)
+
+	valueBigInt := new(big.Int)
+	value, ok := valueBigInt.SetString(tr.Value, 10)
+	if !ok {
+		Op.logger.Error("Cannot set value into BigInt")
+		return errors.New("Cannot set value into BigInt")
+	} // in wei (1 eth)
+	tr.ValueBigInt = value
+
+	fmt.Println("Transfer amount: ", tr.ValueBigInt)
+
 	gasLimit := uint64(models.GasLimit) // in units
 	gasPrice, err := Op.ethereumClient.SuggestGasPrice(context.Background())
 	if err != nil {
@@ -73,7 +84,7 @@ func (Op *OperationService) Withdrawal(ctx context.Context, tr models.Transactio
 	//0x4592d8f8d7b001e72cb26a73e4fa1806a51ac79d
 	toAddress := common.HexToAddress(tr.AddressTo)
 	var data []byte
-	tx := types.NewTransaction(nonce, toAddress, &value, gasLimit, gasPrice, data)
+	tx := types.NewTransaction(nonce, toAddress, value, gasLimit, gasPrice, data)
 
 	Op.logger.Debug("ToAddress was created: ")
 
@@ -102,8 +113,11 @@ func (Op *OperationService) Withdrawal(ctx context.Context, tr models.Transactio
 	tr.Hex = signedTx.Hash().Hex()
 
 	// Wait for the transaction to be mined and check its status.
-	receipt, err := Op.waitForTransaction(context.Background(), signedTx.Hash())
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
+	defer cancel()
+	receipt, err := Op.waitForTransaction(ctx, signedTx.Hash())
 	if err != nil {
+		Op.logger.Info("Failed to wait for transaction")
 		Op.logger.Error(err.Error())
 		return err
 	}
@@ -117,6 +131,7 @@ func (Op *OperationService) Withdrawal(ctx context.Context, tr models.Transactio
 
 	err = Op.repo.Withdrawal(ctx, &tr)
 	if err != nil {
+		Op.logger.Info("failed Op.repo.Withdrawal")
 		Op.logger.Error(err.Error())
 		return err
 	}
@@ -128,7 +143,7 @@ func (Op *OperationService) Withdrawal(ctx context.Context, tr models.Transactio
 
 func (Op *OperationService) waitForTransaction(ctx context.Context, txHash common.Hash) (*types.Receipt, error) {
 
-	ticker := time.NewTicker(10 * time.Second)
+	ticker := time.NewTicker(30 * time.Second)
 	defer ticker.Stop()
 
 	for {
@@ -136,12 +151,14 @@ func (Op *OperationService) waitForTransaction(ctx context.Context, txHash commo
 		case <-ctx.Done():
 			return nil, ctx.Err()
 		case <-ticker.C:
-			receipt, _ := Op.ethereumClient.TransactionReceipt(ctx, txHash)
-			//if err != nil {
-			//	return nil, err
-			//}
+			receipt, err := Op.ethereumClient.TransactionReceipt(ctx, txHash)
+			if err != nil {
+				Op.logger.Error("Error getting transaction receipt", zap.Error(err))
+				return nil, err
+			}
+			fmt.Println("receipt: ", receipt)
 
-			if receipt.Status == 1 {
+			if receipt.Status == types.ReceiptStatusSuccessful {
 				return receipt, nil
 			}
 		}

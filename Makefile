@@ -30,3 +30,8 @@ mado:
 # 2 sudo apt reinstall snapd
 
 # sudo lsof -i :5432
+
+
+# docker exec -it <ID> bash
+# psql -h db -U postgres -d etherium_service -p 5432 -W
+# Test2023
