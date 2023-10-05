@@ -20,7 +20,7 @@ func NewOperationRepository(db *postgres.Postgres, logger *zap.Logger) *Operatio
 	return &OperationRepository{db: db, logger: logger}
 }
 func (Op *OperationRepository) GetUserByAddress(ctx context.Context, address string) (*models.User, error) {
-	statements, arguments, err := Op.db.Builder.Select("User").Where("address", address).Suffix("RETURN ").ToSql()
+	statements, arguments, err := Op.db.Builder.Select("users").Where("addres", address).Suffix("RETURN account_id, public_key, private_key, balance, addres").ToSql()
 	if err != nil {
 		Op.logger.Error(err.Error())
 	}
@@ -30,7 +30,7 @@ func (Op *OperationRepository) GetUserByAddress(ctx context.Context, address str
 	return &user, nil
 }
 func (Op *OperationRepository) BalanceUpdate(ctx context.Context, balance big.Int) error {
-	statement, arguments, err := Op.db.Builder.Update("User").Set("balance", balance).ToSql()
+	statement, arguments, err := Op.db.Builder.Update("users").Set("balance", balance).ToSql()
 	if err != nil {
 		Op.logger.Error(err.Error())
 	}
@@ -40,7 +40,7 @@ func (Op *OperationRepository) BalanceUpdate(ctx context.Context, balance big.In
 
 func (Op *OperationRepository) Withdrawal(ctx context.Context, tr *models.Transaction) error {
 
-	sql, args, err := Op.db.Builder.Insert("transactions").Columns("value", "private_key", "adress_to", "hex").
+	sql, args, err := Op.db.Builder.Insert("transactions").Columns("amount", "private_key", "adress_to", "hex").
 		Values(tr.Value, tr.PrivateKey, tr.AddressTo, tr.Hex).ToSql()
 	if err != nil {
 		Op.logger.Error(err.Error())

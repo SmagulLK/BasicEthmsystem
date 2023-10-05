@@ -4,7 +4,7 @@ CREATE TABLE users (
     public_key TEXT NOT NULL,
     private_key TEXT NOT NULL,
     balance BIGINT NOT NULL,
-    decimals INT NOT NULL
+    addres TEXT NOT NULL,
 );
 
 -- Create the 'hot_wallet' table
@@ -13,15 +13,16 @@ CREATE TABLE hot_wallet (
     public_key TEXT NOT NULL,
     private_key TEXT NOT NULL,
     balance BIGINT NOT NULL,
-    decimals INT NOT NULL
 );
 
 -- Create the 'transactions' table
 CREATE TABLE transactions (
     transaction_id SERIAL PRIMARY KEY,
-    from_account_id INT REFERENCES accounts(account_id),
-    to_account_id INT REFERENCES accounts(account_id),
+    from_account_pubk INT REFERENCES users(public_key),
+    to_account_pubk INT REFERENCES users(public_key),
     amount BIGINT NOT NULL,
-    status TEXT NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+    -- status TEXT NOT NULL,
+    private_key NOT NULL,
+    adress_to NOT NULL,
+    hex TEXT NOT NULL,
 );
