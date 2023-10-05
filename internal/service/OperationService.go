@@ -5,7 +5,6 @@ import (
 	"crypto/ecdsa"
 	"errors"
 	"math/big"
-	"strconv"
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -57,14 +56,14 @@ func (Op *OperationService) Withdrawal(ctx context.Context, tr models.Transactio
 	}
 
 	// Convert the string value to int64
-	valueInt64, err := strconv.ParseInt(tr.Value, 10, 64)
-	if err != nil {
-		Op.logger.Error("Invalid 'value' field", zap.Error(err))
-		return err
-	}
+	//valueInt64, err := strconv.ParseInt(tr.Value.String(), 10, 64)
+	//if err != nil {
+	//	Op.logger.Error("Invalid 'value' field", zap.Error(err))
+	//	return err
+	//}
 
 	//1000000000000000000
-	value := big.NewInt(valueInt64)     // in wei (1 eth)
+	value := tr.Value                   // in wei (1 eth)
 	gasLimit := uint64(models.GasLimit) // in units
 	gasPrice, err := Op.ethereumClient.SuggestGasPrice(context.Background())
 	if err != nil {
@@ -74,7 +73,7 @@ func (Op *OperationService) Withdrawal(ctx context.Context, tr models.Transactio
 	//0x4592d8f8d7b001e72cb26a73e4fa1806a51ac79d
 	toAddress := common.HexToAddress(tr.AddressTo)
 	var data []byte
-	tx := types.NewTransaction(nonce, toAddress, value, gasLimit, gasPrice, data)
+	tx := types.NewTransaction(nonce, toAddress, &value, gasLimit, gasPrice, data)
 
 	Op.logger.Debug("ToAddress was created: ")
 
