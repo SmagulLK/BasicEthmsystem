@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"fmt"
-	"github.com/jackc/pgx/v5/pgtype"
 	"time"
 
 	"go.uber.org/zap"
@@ -23,11 +22,7 @@ func NewCommonRepository(db *postgres.Postgres, logger *zap.Logger) *Common {
 func (Op *Common) InsertData(user models.User) error {
 	Op.logger.Info("inside InsertData")
 
-	balanceNumeric := pgtype.Numeric{
-		Int: user.Balance,
-	}
-
-	statement, arguments, err := Op.db.Builder.Insert("users").Columns("private_key", "public_key", "addres", "balance").Values(user.PrivateKey, user.PublicKey, user.Address, balanceNumeric.Int).ToSql()
+	statement, arguments, err := Op.db.Builder.Insert("users").Columns("private_key", "public_key", "addres", "balance").Values(user.PrivateKey, user.PublicKey, user.Address, user.Balance.Int).ToSql()
 	if err != nil {
 		Op.logger.Error(err.Error())
 	}

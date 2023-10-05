@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"github.com/jackc/pgx/v5/pgtype"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -36,7 +37,7 @@ func (Gen *GenerationService) Generate() (string, string, string, error) {
 	address := crypto.PubkeyToAddress(pvk.PublicKey).Hex()
 	zero := big.NewInt(0)
 	var user = models.User{
-		Balance:    zero,
+		Balance:    pgtype.Numeric{Int: zero},
 		UserID:     utils.BeginId,
 		PublicKey:  pubStr,
 		PrivateKey: pvkStr,
