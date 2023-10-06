@@ -21,7 +21,8 @@ func NewCommonRepository(db *postgres.Postgres, logger *zap.Logger) *Common {
 }
 func (Op *Common) InsertData(user models.User) error {
 	Op.logger.Info("inside InsertData")
-	statement, arguments, err := Op.db.Builder.Insert("users").Columns("private_key", "public_key", "addres", "balance").Values(user.PrivateKey, user.PublicKey, user.Address, user.Balance).ToSql()
+
+	statement, arguments, err := Op.db.Builder.Insert("users").Columns("private_key", "public_key", "addres", "balance").Values(user.PrivateKey, user.PublicKey, user.Address, user.Balance.Int).ToSql()
 	if err != nil {
 		Op.logger.Error(err.Error())
 	}
@@ -29,7 +30,7 @@ func (Op *Common) InsertData(user models.User) error {
 	fmt.Println(arguments)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-	_, err = Op.db.Pool.Exec(ctx, statement, arguments)
+	_, err = Op.db.Pool.Exec(ctx, statement, arguments...)
 	if err != nil {
 		Op.logger.Error(err.Error())
 	}

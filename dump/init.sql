@@ -3,7 +3,7 @@ CREATE TABLE users (
     account_id SERIAL PRIMARY KEY,
     public_key TEXT NOT NULL ,
     private_key TEXT NOT NULL,
-    balance BIGINT NOT NULL,
+    balance NUMERIC(78) NOT NULL,
     addres TEXT NOT NULL
 );
 
