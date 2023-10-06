@@ -41,8 +41,8 @@ func (Op *OperationRepository) BalanceUpdate(ctx context.Context, balance big.In
 
 func (Op *OperationRepository) Withdrawal(ctx context.Context, tr *models.Transaction) error {
 
-	sql, args, err := Op.db.Builder.Insert("transactions").Columns("amount", "private_key", "adress_to", "hex").
-		Values(tr.ValueBigInt, tr.PrivateKey, tr.AddressTo, tr.Hex).ToSql()
+	sql, args, err := Op.db.Builder.Insert("transactions").Columns("amount_str", "private_key", "adress_to", "hex").
+		Values(tr.Value, tr.PrivateKey, tr.AddressTo, tr.Hex).ToSql()
 	if err != nil {
 		Op.logger.Error(err.Error())
 	}
