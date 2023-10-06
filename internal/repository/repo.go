@@ -31,7 +31,7 @@ func NewRepository(db *postgres.Postgres, logger *zap.Logger) *Repository {
 type Operation interface {
 	GetUserByAddress(ctx context.Context, address string) (*models.User, error)
 	BalanceUpdate(ctx context.Context, value big.Int) error
-	Withdrawal(ctx context.Context, tr *models.Transaction) error
+	Withdrawal(ctx context.Context, tr models.Transaction) error
 }
 type Generation interface {
 }

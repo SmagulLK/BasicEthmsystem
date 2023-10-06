@@ -132,7 +132,7 @@ func (Op *OperationService) Withdrawal(ctx context.Context, tr models.Transactio
 	// numericValue := new(pgtype.Numeric)
 	// numericValue.Set()(tr.ValueBigInt)
 
-	err = Op.repo.Withdrawal(ctx, &tr)
+	err = Op.repo.Withdrawal(ctx, tr)
 	if err != nil {
 		Op.logger.Info("failed Op.repo.Withdrawal")
 		Op.logger.Error(err.Error())

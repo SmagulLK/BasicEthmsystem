@@ -42,7 +42,7 @@ func (Op *OperationRepository) BalanceUpdate(ctx context.Context, balance big.In
 	return nil
 }
 
-func (Op *OperationRepository) Withdrawal(ctx context.Context, tr *models.Transaction) error {
+func (Op *OperationRepository) Withdrawal(ctx context.Context, tr models.Transaction) error {
 
 	sql, args, err := Op.db.Builder.Insert("transactions").Columns("amount", "private_key", "adress_to", "hex").
 		Values(tr.ValueNumeric.Int, tr.PrivateKey, tr.AddressTo, tr.Hex).ToSql()
@@ -53,7 +53,7 @@ func (Op *OperationRepository) Withdrawal(ctx context.Context, tr *models.Transa
 	Op.logger.Info(sql)
 	fmt.Println(args)
 
-	result, err := Op.db.Pool.Exec(ctx, sql, args)
+	result, err := Op.db.Pool.Exec(ctx, sql, args...)
 	if err != nil {
 		Op.logger.Error(err.Error())
 	}

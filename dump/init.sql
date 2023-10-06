@@ -18,8 +18,8 @@ CREATE TABLE hot_wallet (
 -- Create the 'transactions' table
 CREATE TABLE transactions (
     transaction_id SERIAL PRIMARY KEY,
-    from_account_pubk INT REFERENCES users(account_id),
-    to_account_pubk INT REFERENCES users(account_id),
+    -- from_account_pubk INT REFERENCES users(account_id),
+    -- to_account_pubk INT REFERENCES users(account_id),
     amount NUMERIC(78) NOT NULL,
     -- numeric_amount numeric(30, 0)
     -- status TEXT NOT NULL,
