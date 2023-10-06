@@ -20,9 +20,8 @@ CREATE TABLE transactions (
     transaction_id SERIAL PRIMARY KEY,
     from_account_pubk INT REFERENCES users(account_id),
     to_account_pubk INT REFERENCES users(account_id),
-    -- amount BIGINT NOT NULL,
+    amount NUMERIC(78) NOT NULL,
     -- numeric_amount numeric(30, 0)
-    amount_str VARCHAR(64),
     -- status TEXT NOT NULL,
     private_key TEXT NOT NULL,
     adress_to TEXT NOT NULL,

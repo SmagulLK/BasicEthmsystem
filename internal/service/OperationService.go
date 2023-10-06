@@ -12,6 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/jackc/pgx/v5/pgtype"
 	"go.uber.org/zap"
 
 	"TestProjectEthereum/internal/repository"
@@ -71,9 +72,8 @@ func (Op *OperationService) Withdrawal(ctx context.Context, tr models.Transactio
 		Op.logger.Error("Cannot set value into BigInt")
 		return errors.New("Cannot set value into BigInt")
 	} // in wei (1 eth)
-	tr.ValueBigInt = value
-
-	fmt.Println("Transfer amount: ", tr.ValueBigInt)
+	tr.ValueNumeric = pgtype.Numeric{Int: value}
+	fmt.Println("Transfer amount: ", tr.ValueNumeric.Int)
 
 	gasLimit := uint64(models.GasLimit) // in units
 	gasPrice, err := Op.ethereumClient.SuggestGasPrice(context.Background())

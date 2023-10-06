@@ -4,14 +4,16 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"math/big"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Transaction struct {
-	Value       string `json:"value"`
-	PrivateKey  string `json:"private_key"`
-	AddressTo   string `json:"address"`
-	Hex         string `json:"hex,omitempty"`
-	ValueBigInt *big.Int
+	Value        string `json:"value"`
+	PrivateKey   string `json:"private_key"`
+	AddressTo    string `json:"address"`
+	Hex          string `json:"hex,omitempty"`
+	ValueNumeric pgtype.Numeric
 	// this is no need on frontend
 }
 
